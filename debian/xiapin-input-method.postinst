@@ -1,0 +1,66 @@
+#!/bin/sh
+set -e
+
+#DEBHELPER#
+
+reload_active_user_managers() {
+    # Jammy's deb-systemd-invoke supports start/stop/restart for user units,
+    # but not `--user daemon-reload`. systemd 249 does support addressing an
+    # already running user manager through --machine=UID@, so use the same
+    # manager enumeration as init-system-helpers. Never inspect home dirs or
+    # start a user manager that is not already active.
+    systemctl --no-legend --quiet list-units 'user@*.service' 2>/dev/null |
+        sed -n 's/.*user@\([0-9][0-9]*\)\.service.*/\1/p' |
+        while IFS= read -r user_id; do
+            systemctl --quiet --user --machine="$user_id@" daemon-reload \
+                >/dev/null 2>&1 || true
+        done
+}
+
+case "$1" in
+    configure|abort-upgrade|abort-deconfigure|abort-remove)
+        if [ -z "${DPKG_ROOT:-}" ]; then
+            # 1.0.0 shipped a globally enabled polling timer. Stop it in all
+            # active user managers, then remove its Debian enable-state and
+            # global wants links. Per-user overrides are cleaned by bootstrap.
+            deb-systemd-invoke --user stop \
+                ubuntu-cn-input-watchdog.timer \
+                ubuntu-cn-input-watchdog.service >/dev/null 2>&1 || true
+            deb-systemd-helper --user purge \
+                ubuntu-cn-input-watchdog.timer \
+                ubuntu-cn-input-watchdog.service >/dev/null 2>&1 || true
+            # Versions through 1.0.10 installed a custom Fcitx supervisor;
+            # 1.0.11 used a one-shot Fcitx bootstrap. Remove both project-owned
+            # units without stopping IBus or any user-owned Fcitx service.
+            deb-systemd-invoke --user stop ubuntu-cn-input.service >/dev/null 2>&1 || true
+            deb-systemd-helper --user purge ubuntu-cn-input.service >/dev/null 2>&1 || true
+            deb-systemd-invoke --user stop ubuntu-cn-input-bootstrap.service >/dev/null 2>&1 || true
+            deb-systemd-helper --user purge ubuntu-cn-input-bootstrap.service >/dev/null 2>&1 || true
+            # A package repair or downgrade/upgrade cycle can leave the 2.0
+            # oneshot active while its unit file is replaced. Stop that object
+            # before reloading the user manager so systemd never reports EBUSY.
+            deb-systemd-invoke --user stop xiapin-bootstrap.service >/dev/null 2>&1 || true
+            deb-systemd-helper --user unmask xiapin-bootstrap.service >/dev/null || true
+            # Active graphical sessions run setup immediately. Users without
+            # one run it at the next graphical login. Purge this package's
+            # helper state first so remove followed by reinstall enables the
+            # service again instead of retaining the previous disable marker.
+            deb-systemd-helper --user purge xiapin-bootstrap.service >/dev/null || true
+            deb-systemd-helper --user enable xiapin-bootstrap.service >/dev/null || true
+            reload_active_user_managers
+            deb-systemd-invoke --user restart xiapin-bootstrap.service >/dev/null || true
+        fi
+        if command -v update-desktop-database >/dev/null 2>&1; then
+            update-desktop-database -q /usr/share/applications || true
+        fi
+        if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+            gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor || true
+        fi
+        ;;
+esac
+
+if [ "$1" = configure ]; then
+    printf '\n瞎拼输入法安装完成。可选检查命令：ubuntu-cn-input-doctor\n\n'
+fi
+
+exit 0

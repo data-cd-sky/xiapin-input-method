@@ -1,0 +1,213 @@
+xiapin-input-method (2.0.3) unstable; urgency=medium
+
+  * Select Xiapin through GNOME Shell after its IBus panel reconnects.
+  * Defer selection safely when installation occurs on the lock screen.
+  * Use Chinese punctuation in Chinese mode and ASCII punctuation in English.
+  * Print the optional ubuntu-cn-input-doctor check after package setup.
+  * Reload active user managers compatibly with Jammy init-system-helpers.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Tue, 24 Nov 2026 23:00:00 +0800
+
+xiapin-input-method (2.0.2) unstable; urgency=medium
+
+  * Pass an ordinary Space through when no pinyin composition is active.
+  * Cover idle Space in both core and real IBus integration tests.
+  * Add a persistent cross-machine release acceptance contract.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Tue, 24 Nov 2026 22:00:00 +0800
+
+xiapin-input-method (2.0.1) unstable; urgency=medium
+
+  * Refresh a pre-existing IBus registry cache on first installation.
+  * Require the static engine metadata to be visible before setup succeeds.
+  * Wait for GNOME's asynchronous IBus restart instead of racing a second
+    daemon.
+  * Verify post-restart metadata in a fresh process instead of a stale GI bus.
+  * Remove the temporary dynamic-engine fallback that GNOME cannot enumerate.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Tue, 24 Nov 2026 20:40:00 +0800
+
+xiapin-input-method (2.0.0) UNRELEASED; urgency=medium
+
+  * Replace the Fcitx integration with a native IBus engine backed by LibIME.
+  * Register, add, and select Xiapin automatically in active GNOME sessions.
+  * Preserve editable pinyin, local learning, and verified memory migration.
+  * Migrate 1.x data and managed configuration without an install prompt.
+  * Build on Ubuntu 22.04 for one-package 22.04/24.04/26.04 compatibility.
+  * Add Emoji candidates from each Ubuntu release's Chinese IBus database.
+  * Load the Emoji index once at Engine startup and preserve LibIME learning.
+  * Diagnose the system Emoji data and font and protect mid-composition edits.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Tue, 24 Nov 2026 10:30:00 +0800
+
+xiapin-input-method (1.0.11) UNRELEASED; urgency=medium
+
+  * Remove the project-owned systemd supervisor for the Fcitx main process.
+  * Stop masking GNOME's IBus user service and migrate old managed masks away.
+  * Launch Fcitx from the graphical session following upstream guidance.
+  * Decouple learning-data restore from the removed managed service.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Sun, 22 Nov 2026 20:00:00 +0800
+
+xiapin-input-method (1.0.10) unstable; urgency=medium
+
+  * Recover Fcitx tray restart requests through the managed systemd service.
+  * Keep explicit service stops and graphical logout stops authoritative.
+  * Restore a previously running input service after interrupted setup.
+  * Make learning-memory export and import stop and restore Fcitx safely.
+  * Turn the searchable settings launcher into a non-disruptive repair entry.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Sun, 22 Nov 2026 16:10:00 +0800
+
+xiapin-input-method (1.0.9) unstable; urgency=medium
+
+  * Stop Fcitx before editing files so its exit flush cannot overwrite setup.
+  * Reapply the Wayland advisory suppression after a stale runtime flush.
+  * Put the keyboard first so the inactive state is always English.
+  * Diagnose input-method group ordering explicitly.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Fri, 20 Nov 2026 21:30:00 +0800
+
+xiapin-input-method (1.0.8) unstable; urgency=medium
+
+  * Keep an English keyboard alongside Xiapin so Fcitx can toggle states.
+  * Make a short left Shift press a symmetric input-method toggle.
+  * Preserve existing hotkeys and restore the pre-Xiapin config on cleanup.
+  * Diagnose missing keyboard and Shift-toggle configuration explicitly.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Fri, 20 Nov 2026 21:10:00 +0800
+
+xiapin-input-method (1.0.7) unstable; urgency=medium
+
+  * Remove the one-pixel light seam beside the orange candidate highlight.
+  * Scale the packaged theme correctly on fractional-DPI Wayland displays.
+  * Suppress only Fcitx's redundant GNOME Kimpanel advisory.
+  * Preserve and restore existing notification preferences across setup.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Fri, 20 Nov 2026 18:00:00 +0800
+
+xiapin-input-method (1.0.6) unstable; urgency=medium
+
+  * Show the installed release in the Fcitx tray menu and settings list.
+  * Keep the compact tray label unchanged while exposing the full version.
+  * Preserve the unified orange GTK and Classic UI candidate theme.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Fri, 20 Nov 2026 17:45:00 +0800
+
+xiapin-input-method (1.0.5) unstable; urgency=medium
+
+  * Pin Fcitx Classic UI and ship a stable Ubuntu-orange candidate theme.
+  * Prefer the Fcitx Qt 6 input module before Wayland and IBus fallbacks.
+  * Back up, upgrade, diagnose, and restore the managed candidate UI config.
+  * Add Ubuntu 22.04 and 24.04 dependency-resolution verification.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Fri, 20 Nov 2026 17:30:00 +0800
+
+xiapin-input-method (1.0.4) unstable; urgency=medium
+
+  * Retry selecting Xiapin until the native pinyin addon finishes loading.
+  * Fix a clean-session race that could leave keyboard-us current after install.
+  * Verify the fix on a separate Ubuntu 26.04 GNOME Wayland workstation.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Fri, 20 Nov 2026 13:15:00 +0800
+
+xiapin-input-method (1.0.3) unstable; urgency=medium
+
+  * Replace the destructive repair launcher with a safe Fcitx settings entry.
+  * Require the official Fcitx 5 configuration tool at installation time.
+  * Reject root and non-graphical launches and serialize repeated clicks.
+  * Preserve the 1.0.2 graphical-session lifecycle fix.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Fri, 20 Nov 2026 12:30:00 +0800
+
+xiapin-input-method (1.0.2) unstable; urgency=medium
+
+  * Bind Fcitx and bootstrap services to the graphical-session lifecycle.
+  * Reconcile the runtime environment and current input method on every login.
+  * Add an XDG autostart fallback for user managers that survive logout.
+  * Stop keeping Fcitx alive after its display session disconnects.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Fri, 20 Nov 2026 14:30:00 +0800
+
+xiapin-input-method (1.0.1) unstable; urgency=medium
+
+  * Enable and select Xiapin automatically in active desktop user sessions.
+  * Add a login-time fallback and a visible repair launcher.
+  * Require GTK, Qt, Wayland frontends and CJK fonts for terminal compatibility.
+  * Validate committed Chinese text as UTF-8 in the Fcitx event test.
+  * Remove the polling watchdog; retain bounded systemd crash recovery.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Fri, 20 Nov 2026 10:30:00 +0800
+
+xiapin-input-method (1.0.0) unstable; urgency=medium
+
+  * Publish the first stable, shareable Xiapin release.
+  * Keep all learned words and history local, with verified portable backups.
+  * Preserve upgrades from 0.3.x/0.4.x and reversible Fcitx 5 activation.
+  * Ship the selected pixel sunglasses icon with Yaru orange highlights.
+  * Add release notes, clean source archives, privacy checks and release tests.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Fri, 20 Nov 2026 01:00:00 +0800
+
+xiapin-input-method (0.4.3) unstable; urgency=medium
+
+  * Document installation, source builds, architecture and language roles.
+  * Clarify IBus/Fcitx selection, cleanup, local memory and support status.
+  * Add automated checks for documentation links and release-version drift.
+
+ -- Ubuntu CN Input Maintainers <ubuntu-cn-input@example.org>  Fri, 20 Nov 2026 00:05:00 +0800
+
+xiapin-input-method (0.4.2) unstable; urgency=medium
+
+  * Adopt the selected pixel sunglasses mark as the application icon.
+  * Match the lens highlight to Ubuntu Yaru orange (#E95420).
+  * Keep the icon legible at 16, 22 and 24 pixel tray sizes.
+
+ -- Ubuntu CN Input Maintainers <ubuntu-cn-input@example.org>  Thu, 19 Nov 2026 23:35:00 +0800
+
+xiapin-input-method (0.4.1) unstable; urgency=medium
+
+  * Replace the cursor-like icon with a compact xp ligature.
+  * Preserve the indigo, pale-blue and warm-yellow visual identity.
+  * Add rendered 16, 22 and 24 pixel icon checks.
+
+ -- Ubuntu CN Input Maintainers <ubuntu-cn-input@example.org>  Thu, 19 Nov 2026 22:10:00 +0800
+
+xiapin-input-method (0.4.0) unstable; urgency=medium
+
+  * Select Fcitx 5 through im-config for the user running setup.
+  * Mask GNOME's per-user IBus service without removing IBus packages.
+  * Propagate Fcitx variables to D-Bus and the systemd user manager.
+  * Back up and conditionally restore all framework selection changes.
+
+ -- Ubuntu CN Input Maintainers <ubuntu-cn-input@example.org>  Thu, 19 Nov 2026 21:30:00 +0800
+
+xiapin-input-method (0.3.2) unstable; urgency=medium
+
+  * Activate Fcitx 5 correctly in Ubuntu GNOME/Wayland through the supported
+    per-user .gnomerc session hook, with backup-aware cleanup.
+  * Enable the packaged Fcitx service and watchdog during desktop setup.
+
+ -- Ubuntu CN Input Maintainers <ubuntu-cn-input@example.org>  Thu, 19 Nov 2026 21:10:00 +0800
+
+xiapin-input-method (0.3.1) unstable; urgency=medium
+
+  * Preserve legacy Table learning words by segmenting compact pinyin into
+    LibIME's apostrophe-delimited full-pinyin form during migration.
+
+ -- Ubuntu CN Input Maintainers <ubuntu-cn-input@example.org>  Thu, 19 Nov 2026 20:50:00 +0800
+
+xiapin-input-method (0.3.0) unstable; urgency=medium
+
+  * Replace the Table backend with Fcitx 5's native LibIME pinyin engine.
+  * Fix pre-edit cursor tracking, in-place editing and syllable boundaries.
+  * Migrate local Table learning data and portable memory to native pinyin.
+  * Rename the visible input method to Xiapin.
+
+ -- Ubuntu CN Input Maintainers <ubuntu-cn-input@example.org>  Thu, 19 Nov 2026 17:50:00 +0800
+
+ubuntu-cn-input (0.2.0) unstable; urgency=medium
+
+  * Initial Debian package with offline local learning and watchdog support.
+
+ -- Ubuntu CN Input Maintainers <ubuntu-cn-input@example.org>  Thu, 19 Nov 2026 08:00:00 +0000

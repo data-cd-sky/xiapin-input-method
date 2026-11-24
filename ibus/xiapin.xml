@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component>
+  <name>org.freedesktop.IBus.Xiapin</name>
+  <description>Xiapin offline Simplified Chinese input method</description>
+  <exec>/usr/libexec/ibus-engine-xiapin --ibus</exec>
+  <version>2.0.3</version>
+  <author>Xiapin Input Method Maintainers</author>
+  <license>MIT</license>
+  <homepage>https://example.invalid/xiapin</homepage>
+  <textdomain>xiapin</textdomain>
+  <engines>
+    <engine>
+      <name>xiapin</name>
+      <longname>瞎拼输入法</longname>
+      <description>离线简体中文全拼输入法</description>
+      <language>zh_CN</language>
+      <license>MIT</license>
+      <author>Xiapin Input Method Maintainers</author>
+      <icon>/usr/share/icons/hicolor/scalable/apps/xiapin.svg</icon>
+      <layout>us</layout>
+      <version>2.0.3</version>
+      <rank>99</rank>
+      <symbol>😎</symbol>
+    </engine>
+  </engines>
+</component>

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Xiapin Input Method Bootstrap
+Comment=Register and select Xiapin in the graphical session
+Exec=/usr/libexec/xiapin/ibusctl.py setup
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

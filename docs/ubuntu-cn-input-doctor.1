@@ -1,0 +1,31 @@
+.TH UBUNTU-CN-INPUT-DOCTOR 1 "2026-11-24" "Xiapin 2.0.3" "User Commands"
+.SH NAME
+ubuntu-cn-input-doctor \- diagnose a Xiapin installation and desktop session
+.SH SYNOPSIS
+.B ubuntu-cn-input-doctor
+.br
+.B ubuntu-cn-input-doctor --version
+.SH DESCRIPTION
+.B ubuntu-cn-input-doctor
+checks the installed package, required programs and data files, UTF-8 locale,
+CJK font, user service, GNOME input source, current IBus registry, Engine
+process and permissions of local learning data.
+.PP
+The command does not modify package files, desktop settings or learning data.
+It exits unsuccessfully when a required installation component is missing.
+Session-specific conditions that may be normal outside a graphical login are
+reported as warnings.
+.SH OPTIONS
+.TP
+.B --version
+Print the installed Xiapin version and exit.
+.SH FILES
+.TP
+.I /usr/share/ibus/component/xiapin.xml
+IBus component registration.
+.TP
+.I ~/.local/share/xiapin/
+Default location of private learning data.
+.SH SEE ALSO
+.BR ibus (1),
+.BR ubuntu-cn-input-memory (1)

@@ -1,0 +1,11 @@
+[Unit]
+Description=Finish selecting Xiapin after GNOME unlock
+Documentation=file:/usr/share/doc/xiapin-input-method/README.md
+After=graphical-session.target dbus.service
+PartOf=graphical-session.target
+ConditionUser=!root
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/xiapin/ibusctl.py wait_unlock
+TimeoutStopSec=5s

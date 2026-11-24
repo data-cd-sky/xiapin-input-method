@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = remove ] || [ "$1" = deconfigure ]; then
+    if [ -z "${DPKG_ROOT:-}" ]; then
+        # ExecStop removes only ibus:xiapin from each active user's GNOME
+        # input-source list before the engine binary disappears.
+        deb-systemd-invoke --user stop xiapin-unlock.service >/dev/null || true
+        deb-systemd-invoke --user stop xiapin-bootstrap.service >/dev/null || true
+        deb-systemd-helper --user disable xiapin-bootstrap.service >/dev/null || true
+    fi
+fi
+
+exit 0

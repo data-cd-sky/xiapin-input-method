@@ -1,0 +1,7 @@
+/build/
+/dist/
+/.test-deps/
+/backups/
+/*.deb
+__pycache__/
+*.pyc

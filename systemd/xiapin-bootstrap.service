@@ -1,0 +1,16 @@
+[Unit]
+Description=Enable Xiapin Input Method for this user
+Documentation=file:/usr/share/doc/xiapin-input-method/README.md
+After=graphical-session.target dbus.service
+PartOf=graphical-session.target
+ConditionUser=!root
+
+[Service]
+Type=oneshot
+ExecCondition=/usr/bin/systemctl --user --quiet is-active graphical-session.target
+ExecStart=/usr/libexec/xiapin/ibusctl.py setup
+ExecStop=/usr/libexec/xiapin/ibusctl.py cleanup
+RemainAfterExit=yes
+
+[Install]
+WantedBy=graphical-session.target

@@ -1,0 +1,62 @@
+.TH UBUNTU-CN-INPUT-MEMORY 1 "2026-11-24" "Xiapin 2.0.3" "User Commands"
+.SH NAME
+ubuntu-cn-input-memory \- manage Xiapin local learning data
+.SH SYNOPSIS
+.B ubuntu-cn-input-memory
+.BR status | migrate
+.br
+.B ubuntu-cn-input-memory
+.BR export | backup
+.RI [ output.ucimem ]
+.br
+.B ubuntu-cn-input-memory verify
+.I archive.ucimem
+.br
+.B ubuntu-cn-input-memory
+.BR import | restore
+.I archive.ucimem
+.RB [ --replace ]
+.SH DESCRIPTION
+Xiapin stores its private LibIME user dictionary and history below
+.IR $XDG_DATA_HOME/xiapin ,
+or below
+.I ~/.local/share/xiapin
+when XDG_DATA_HOME is unset.
+.PP
+This command exports data to a versioned ZIP container, validates names, sizes,
+UTF-8 and SHA-256 checksums, and imports data atomically. Archives use mode 0600.
+They are integrity protected but are not encrypted.
+.SH COMMANDS
+.TP
+.B status
+Print active data paths and any legacy paths available for migration.
+.TP
+.B export, backup
+Export learning data. With no path, create a timestamped state-directory archive.
+.TP
+.B verify
+Validate an archive without changing user data.
+.TP
+.B import, restore
+Merge an archive into current data. Use
+.B --replace
+to replace current data. A backup is made before writing.
+.TP
+.B migrate
+Import learning data from a Xiapin 1.x Fcitx or older Table path when 2.0 private
+files do not yet exist.
+.SH FILES
+.TP
+.I ~/.local/share/xiapin/user.dict
+Private LibIME user dictionary.
+.TP
+.I ~/.local/share/xiapin/user.history
+Private LibIME history.
+.TP
+.I ~/.local/state/ubuntu-cn-input/memory/backups/
+Default exports and pre-import backups.
+.SH PRIVACY
+Archives may contain names, project terms and entered phrases. Store and move
+them using trusted or encrypted media. Xiapin does not upload them.
+.SH SEE ALSO
+.BR ibus (1)

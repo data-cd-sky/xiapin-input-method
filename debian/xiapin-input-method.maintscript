@@ -1,0 +1,1 @@
+rm_conffile /etc/xdg/autostart/xiapin-input-method-autostart.desktop 2.0.0~ xiapin-input-method

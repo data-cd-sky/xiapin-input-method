@@ -1,0 +1,25 @@
+Source: xiapin-input-method
+Section: utils
+Priority: optional
+Maintainer: Xiapin Input Method Maintainers <xiapin-input@example.org>
+Build-Depends: debhelper-compat (= 13), cmake, ninja-build, g++, pkg-config,
+ libibus-1.0-dev, libimecore-dev, libimepinyin-dev, libfcitx5utils-dev,
+ libboost-dev, libime-bin, libime-data, libime-data-language-model, python3,
+ python3-gi, python3-pil, ffmpeg
+Standards-Version: 4.7.2
+Rules-Requires-Root: no
+
+Package: xiapin-input-method
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, ibus (>= 1.5.26), ibus-gtk,
+ ibus-gtk3, ibus-gtk4, ibus-data, im-config, libime-bin, libime-data,
+ libime-data-language-model, python3, python3-gi, gir1.2-glib-2.0,
+ gir1.2-ibus-1.0, fonts-noto-cjk, fonts-noto-color-emoji, systemd,
+ init-system-helpers, dbus-bin
+Recommends: libnotify-bin
+Provides: ubuntu-cn-input
+Breaks: ubuntu-cn-input (<< 1.0.4)
+Replaces: ubuntu-cn-input (<< 1.0.4)
+Description: Xiapin offline Simplified Chinese input for IBus
+ Xiapin provides its own LibIME-powered IBus engine with sentence composition,
+ editable full pinyin, local-only learning, and verified portable backups.

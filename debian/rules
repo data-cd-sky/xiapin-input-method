@@ -1,0 +1,42 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	cmake -S . -B build/native -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr
+	cmake --build build/native
+	$(MAKE) package-files
+
+override_dh_auto_test:
+	$(MAKE) test
+
+override_dh_auto_install:
+	install -d debian/xiapin-input-method/etc/xdg/autostart \
+		debian/xiapin-input-method/usr/bin \
+		debian/xiapin-input-method/usr/share/man/man1 \
+		debian/xiapin-input-method/usr/libexec/xiapin \
+		debian/xiapin-input-method/usr/lib/systemd/user \
+		debian/xiapin-input-method/usr/share/ibus/component \
+		debian/xiapin-input-method/usr/share/xiapin \
+		debian/xiapin-input-method/usr/share/icons/hicolor/scalable/apps \
+		debian/xiapin-input-method/usr/share/doc/xiapin-input-method
+	install -m 0755 build/native/ibus-engine-xiapin debian/xiapin-input-method/usr/libexec/
+	install -m 0755 build/native/xiapin-history debian/xiapin-input-method/usr/libexec/xiapin/
+	install -m 0755 build/package/ubuntu-cn-input-memory debian/xiapin-input-method/usr/bin/
+	install -m 0755 scripts/doctor.sh debian/xiapin-input-method/usr/bin/ubuntu-cn-input-doctor
+	install -m 0755 libexec/ibusctl.py debian/xiapin-input-method/usr/libexec/xiapin/
+	install -m 0755 scripts/legacy-fcitx-cleanup.sh debian/xiapin-input-method/usr/libexec/xiapin/legacy-fcitx-cleanup
+	install -m 0755 libexec/legacy_profilectl.py debian/xiapin-input-method/usr/libexec/xiapin/legacy-profilectl.py
+	install -m 0644 docs/ubuntu-cn-input-memory.1 docs/ubuntu-cn-input-doctor.1 debian/xiapin-input-method/usr/share/man/man1/
+	install -m 0644 systemd/xiapin-bootstrap.service debian/xiapin-input-method/usr/lib/systemd/user/
+	install -m 0644 systemd/xiapin-unlock.service debian/xiapin-input-method/usr/lib/systemd/user/
+	install -m 0644 ibus/xiapin.xml debian/xiapin-input-method/usr/share/ibus/component/
+	install -m 0644 ibus/xiapin.xml debian/xiapin-input-method/usr/share/xiapin/
+	install -m 0644 build/xiapin-extra.dict debian/xiapin-input-method/usr/share/xiapin/xiapin-extra.dict
+	install -m 0644 icons/xiapin.svg debian/xiapin-input-method/usr/share/icons/hicolor/scalable/apps/xiapin.svg
+	install -m 0644 desktop/xiapin-ibus-autostart.desktop debian/xiapin-input-method/etc/xdg/autostart/xiapin-ibus-autostart.desktop
+	install -m 0644 README.md CHANGELOG.md RELEASE_NOTES_$(shell cat VERSION).md docs/DEVELOPMENT.md docs/RELEASE_ACCEPTANCE.md docs/INPUT_METHOD_COMPARISON.md docs/ARCHITECTURE_REVIEW.md data/SOURCES.md debian/xiapin-input-method/usr/share/doc/xiapin-input-method/
+
+override_dh_installsystemduser:
+	dh_installsystemduser --no-enable
