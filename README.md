@@ -3,20 +3,20 @@
 瞎拼是面向 Ubuntu GNOME 的离线简体中文全拼输入法。2.0 自带 IBus Engine，直接使用
 LibIME 完成拼音切分、整句候选和本地学习，不使用 Fcitx 5 输入法框架。
 
-当前版本：**2.0.3**。发布包为 `xiapin-input-method_2.0.3_amd64.deb`，同一个文件支持
+当前版本：**2.0.4**。发布包为 `xiapin-input-method_2.0.4_amd64.deb`，同一个文件支持
 Ubuntu 22.04、24.04 和 26.04 amd64。包在 Ubuntu 22.04 构建，以该版本的 glibc、
 libstdc++ 和 LibIME ABI 为兼容下限。
 
 ## 下载
 
 从 [GitHub Releases](https://github.com/data-cd-sky/xiapin-input-method/releases/latest)
-下载 `xiapin-input-method_2.0.3_amd64.deb`。同一页面提供 `SHA256SUMS`、源码归档和发布
+下载 `xiapin-input-method_2.0.4_amd64.deb`。同一页面提供 `SHA256SUMS`、源码归档和发布
 说明；下载后可按“版本和安装包校验”一节核对哈希。
 
 也可以直接下载当前版本：
 
 ```bash
-curl -fLO https://github.com/data-cd-sky/xiapin-input-method/releases/download/v2.0.3/xiapin-input-method_2.0.3_amd64.deb
+curl -fLO https://github.com/data-cd-sky/xiapin-input-method/releases/download/v2.0.4/xiapin-input-method_2.0.4_amd64.deb
 ```
 
 ## 功能与隐私原则
@@ -46,8 +46,8 @@ curl -fLO https://github.com/data-cd-sky/xiapin-input-method/releases/download/v
 | Ubuntu 24.04.5 | GNOME Wayland | 纯净直装、卸载后重装、重新登录、静态组件启动、真实 IBus 按键行为通过 |
 | Ubuntu 26.04 | GNOME Wayland | 纯净直装、锁屏恢复、重启、静态组件启动、真实 IBus 按键行为通过 |
 
-2.0.3 的最终三系统结果以
-[`docs/RELEASE_EVIDENCE_2.0.3.md`](docs/RELEASE_EVIDENCE_2.0.3.md) 为准。测试不能替代
+2.0.4 的最终三系统结果以
+[`docs/RELEASE_EVIDENCE_2.0.4.md`](docs/RELEASE_EVIDENCE_2.0.4.md) 为准。测试不能替代
 每个应用的人工候选窗检查，GTK、Qt、Firefox、
 Chromium/Electron、挂起恢复、多屏和混合缩放仍应在发布前按“桌面验收”逐项检查。
 
@@ -56,13 +56,13 @@ Chromium/Electron、挂起恢复、多屏和混合缩放仍应在发布前按“
 在包所在目录运行：
 
 ```bash
-sudo apt install ./xiapin-input-method_2.0.3_amd64.deb
+sudo apt install ./xiapin-input-method_2.0.4_amd64.deb
 ```
 
 仓库构建产物位于 `dist/` 时运行：
 
 ```bash
-sudo apt install ./dist/xiapin-input-method_2.0.3_amd64.deb
+sudo apt install ./dist/xiapin-input-method_2.0.4_amd64.deb
 ```
 
 必须使用 APT 安装本地包。APT 会从当前 Ubuntu 软件源安装 IBus、LibIME、字体和 GTK
@@ -99,17 +99,19 @@ ubuntu-cn-input-doctor
 3. 输入 `xi'an`，数字 1 提交“西安”；
 4. 使用 PageUp/PageDown 或 `-`/`=` 翻页；
 5. 使用 Esc、Enter、短按 Shift 和 Ctrl+Space；
-6. 锁屏解锁和挂起恢复后重复上述操作；
-7. 中文模式输入 `,.!?;:`，确认得到 `，。！？；：`；切换英文后确认得到 ASCII 标点；
-8. 多屏或分数缩放环境中，把输入框移到各屏边缘检查候选窗位置；
-9. 输入 `xiaolian`，确认第 9 个候选为 😀，按数字 9 提交表情。
+6. 中文模式输入 `sub` 后直接回车提交英文，再按 `Up`/`Down` 和 PageUp/PageDown，
+   确认按键交给应用；
+7. 锁屏解锁和挂起恢复后重复上述操作；
+8. 中文模式输入 `,.!?;:`，确认得到 `，。！？；：`；切换英文后确认得到 ASCII 标点；
+9. 多屏或分数缩放环境中，把输入框移到各屏边缘检查候选窗位置；
+10. 输入 `xiaolian`，确认第 9 个候选为 😀，按数字 9 提交表情。
 
 ## 升级
 
 在新版 `.deb` 所在目录重复 APT 安装：
 
 ```bash
-sudo apt install ./xiapin-input-method_2.0.3_amd64.deb
+sudo apt install ./xiapin-input-method_2.0.4_amd64.deb
 ```
 
 查看已安装版本：
@@ -233,7 +235,7 @@ sudo apt install build-essential debhelper cmake ninja-build g++ pkg-config \
 make check
 make test
 make deb
-sha256sum dist/xiapin-input-method_2.0.3_amd64.deb
+sha256sum dist/xiapin-input-method_2.0.4_amd64.deb
 ```
 
 `make deb` 优先使用 debhelper；缺少 debhelper 时使用 `scripts/build-deb.sh` 构建兼容的
@@ -245,8 +247,8 @@ sha256sum dist/xiapin-input-method_2.0.3_amd64.deb
 [`docs/RELEASE_ACCEPTANCE.md`](docs/RELEASE_ACCEPTANCE.md)。换电脑或更换维护者后也必须按
 该文档执行，不能用旧包覆盖安装或单机测试代替发布矩阵。
 
-2.0.3 的候选包哈希、冷装结果、顶栏选择和重启证据见
-[`docs/RELEASE_EVIDENCE_2.0.3.md`](docs/RELEASE_EVIDENCE_2.0.3.md)。2.0.2 的记录保留为
+2.0.4 的候选包哈希、冷装结果、顶栏选择和重启证据见
+[`docs/RELEASE_EVIDENCE_2.0.4.md`](docs/RELEASE_EVIDENCE_2.0.4.md)。2.0.2 的记录保留为
 历史资料，其中仅凭 `ibus engine` 判断 GNOME 顶栏已经切换的结论已在 2.0.3 证据中撤回。
 
 - Python 单元测试：输入源合并、IBus 缺失恢复、旧配置恢复、记忆校验和迁移；
@@ -279,8 +281,8 @@ pgrep -af ibus-engine-xiapin
 
 ```bash
 cat VERSION
-dpkg-deb -f dist/xiapin-input-method_2.0.3_amd64.deb Package Version Architecture Depends
-sha256sum dist/xiapin-input-method_2.0.3_amd64.deb
+dpkg-deb -f dist/xiapin-input-method_2.0.4_amd64.deb Package Version Architecture Depends
+sha256sum dist/xiapin-input-method_2.0.4_amd64.deb
 ```
 
 安装前应把 SHA-256 与发布说明逐字符比较。

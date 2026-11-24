@@ -1,3 +1,13 @@
+xiapin-input-method (2.0.4) unstable; urgency=medium
+
+  * Pass Up/Down/PageUp/PageDown back to the application after Enter commits
+    raw pinyin without selecting a Chinese candidate.
+  * Clear cached candidates together with the composition on Enter, Escape,
+    selection and context reset.
+  * Add enter-passthrough coverage to native and real IBus integration tests.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Wed, 25 Nov 2026 00:30:00 +0800
+
 xiapin-input-method (2.0.3) unstable; urgency=medium
 
   * Select Xiapin through GNOME Shell after its IBus panel reconnects.

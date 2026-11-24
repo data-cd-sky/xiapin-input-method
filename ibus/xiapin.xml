@@ -3,7 +3,7 @@
   <name>org.freedesktop.IBus.Xiapin</name>
   <description>Xiapin offline Simplified Chinese input method</description>
   <exec>/usr/libexec/ibus-engine-xiapin --ibus</exec>
-  <version>2.0.3</version>
+  <version>2.0.4</version>
   <author>Xiapin Input Method Maintainers</author>
   <license>MIT</license>
   <homepage>https://example.invalid/xiapin</homepage>
@@ -18,7 +18,7 @@
       <author>Xiapin Input Method Maintainers</author>
       <icon>/usr/share/icons/hicolor/scalable/apps/xiapin.svg</icon>
       <layout>us</layout>
-      <version>2.0.3</version>
+      <version>2.0.4</version>
       <rank>99</rank>
       <symbol>😎</symbol>
     </engine>

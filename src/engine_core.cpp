@@ -292,6 +292,13 @@ public:
         dirtyView_ = true;
     }
 
+    void clearComposition() {
+        context_->clear();
+        candidateCursor_ = 0;
+        candidates_.clear();
+        dirtyView_ = true;
+    }
+
     EngineResult result(bool handled = true) {
         return {handled, dirtyView_, {}};
     }
@@ -304,9 +311,7 @@ public:
         if (candidate.kind == CandidateKind::Emoji) {
             EngineResult output{
                 true, true, context_->selectedSentence() + candidate.text};
-            context_->clear();
-            candidateCursor_ = 0;
-            candidates_.clear();
+            clearComposition();
             return output;
         }
 #ifdef XIAPIN_HAVE_LIBIME_CURSOR_CANDIDATES
@@ -348,9 +353,7 @@ public:
                 // Input must keep working even when persistent learning fails.
             }
         }
-        context_->clear();
-        candidateCursor_ = 0;
-        candidates_.clear();
+        clearComposition();
         return output;
     }
 
@@ -361,8 +364,7 @@ public:
         const auto &items = candidates();
         if (items.empty()) {
             EngineResult output{true, true, std::string(context_->userInput())};
-            context_->clear();
-            candidateCursor_ = 0;
+            clearComposition();
             return output;
         }
         return select(candidateCursor_);
@@ -468,8 +470,7 @@ EngineResult EngineCore::escape() {
     if (impl_->context_->empty()) {
         return {false, false, {}};
     }
-    impl_->context_->clear();
-    impl_->changed();
+    impl_->clearComposition();
     return impl_->result();
 }
 
@@ -478,8 +479,7 @@ EngineResult EngineCore::enter() {
         return {false, false, {}};
     }
     EngineResult output{true, true, std::string(impl_->context_->userInput())};
-    impl_->context_->clear();
-    impl_->candidateCursor_ = 0;
+    impl_->clearComposition();
     return output;
 }
 
@@ -495,6 +495,9 @@ EngineResult EngineCore::selectCurrentCandidate() {
 }
 
 EngineResult EngineCore::pageUp() {
+    if (impl_->context_->empty()) {
+        return {false, false, {}};
+    }
     if (impl_->candidateCursor_ < PageSize) {
         impl_->candidateCursor_ = 0;
     } else {
@@ -505,7 +508,7 @@ EngineResult EngineCore::pageUp() {
 }
 
 EngineResult EngineCore::pageDown() {
-    if (impl_->candidates().empty()) {
+    if (impl_->context_->empty() || impl_->candidates().empty()) {
         return {false, false, {}};
     }
     impl_->candidateCursor_ = std::min(
@@ -515,15 +518,18 @@ EngineResult EngineCore::pageDown() {
 }
 
 EngineResult EngineCore::candidateUp() {
+    if (impl_->context_->empty() || impl_->candidates().empty()) {
+        return {false, false, {}};
+    }
     if (impl_->candidateCursor_ > 0) {
         --impl_->candidateCursor_;
     }
     impl_->dirtyView_ = true;
-    return impl_->result(!impl_->candidates().empty());
+    return impl_->result();
 }
 
 EngineResult EngineCore::candidateDown() {
-    if (impl_->candidates().empty()) {
+    if (impl_->context_->empty() || impl_->candidates().empty()) {
         return {false, false, {}};
     }
     impl_->candidateCursor_ = std::min(
@@ -542,9 +548,7 @@ EngineResult EngineCore::commitBestAndAppend(const std::string &suffix) {
 }
 
 void EngineCore::reset() {
-    impl_->context_->clear();
-    impl_->candidateCursor_ = 0;
-    impl_->dirtyView_ = true;
+    impl_->clearComposition();
 }
 
 void EngineCore::toggleMode() {

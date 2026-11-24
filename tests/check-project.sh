@@ -69,6 +69,7 @@ grep -q '安装前后学习数据逐文件 SHA-256' docs/RELEASE_ACCEPTANCE.md
 grep -q 'uptime' docs/RELEASE_ACCEPTANCE.md
 grep -q 'idle-space=1' docs/RELEASE_ACCEPTANCE.md
 grep -q 'idle-passthrough=1' docs/RELEASE_ACCEPTANCE.md
+grep -q 'enter-passthrough=1' docs/RELEASE_ACCEPTANCE.md
 grep -q 'engine->core->empty()' src/ibus_engine.cpp
 
 for obsolete in libexec/bootstrap.sh libexec/configctl.py libexec/sessionctl.sh \

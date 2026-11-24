@@ -129,10 +129,13 @@ dpkg -V xiapin-input-method
 
 ```text
 commit=你好 edit=1 apostrophe=1 number=1 paging=1 partial=1
-escape=1 enter=1 shift=1 ctrl-space=1 modified-shift=1
+escape=1 enter=1 enter-passthrough=1 shift=1 ctrl-space=1 modified-shift=1
 idle-passthrough=1 idle-space=1 chinese-punctuation=，。 english-punctuation=,.
 horizontal=1 page-size=9 emoji=😀 emoji-prefix=你好😀
 ```
+
+`enter-passthrough=1` 要求中文模式输入拼音后直接按回车以英文原样提交，随后
+`Up`/`Down`/`PageUp`/`PageDown` 回到应用，不能被组合结束前遗留的候选列表吞掉。
 
 真实输入会正常更新 `user.history`，因此“安装不改学习数据”的哈希比较必须在这一步之前
 完成。真实输入后的历史哈希变化不是安装缺陷。
@@ -173,10 +176,12 @@ horizontal=1 page-size=9 emoji=😀 emoji-prefix=你好😀
 3. `xi'an` 使用数字 1 提交“西安”；
 4. PageUp/PageDown 和 `-`/`=` 翻页；
 5. Esc、Enter、短按 Shift、Ctrl+Space；
-6. `xiaolian` 第 9 项为 😀，数字 9 提交；
-7. 候选框横排、位置正确，顶栏显示 😎；
-8. 锁屏、挂起、多屏和分数缩放后重复核心输入。
-9. 中文模式输入 `,.!?;:` 得到 `，。！？；：`，英文模式得到 ASCII 标点；项目中没有
+6. 中文模式输入 `sub` 后直接回车提交英文，再按 `Up`/`Down`/`PageUp`/`PageDown`
+   操作应用候选项或编辑位置；
+7. `xiaolian` 第 9 项为 😀，数字 9 提交；
+8. 候选框横排、位置正确，顶栏显示 😎；
+9. 锁屏、挂起、多屏和分数缩放后重复核心输入。
+10. 中文模式输入 `,.!?;:` 得到 `，。！？；：`，英文模式得到 ASCII 标点；项目中没有
    独立全角/半角开关。
 
 未执行的应用或硬件项必须在 README/发布说明中标为“未人工验收”，不能从 Engine 测试

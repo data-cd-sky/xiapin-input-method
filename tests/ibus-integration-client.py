@@ -128,6 +128,20 @@ if committed_after(lambda: key(IBus.KEY_space)) != "你好":
 if not any(item[0] == "ni hao" and item[2] for item in preedits):
     raise SystemExit(f"expected preedit was not emitted: {preedits!r}")
 
+# Enter commits raw pinyin without selecting a candidate. Once the composition
+# is gone, candidate navigation must return to the application instead of being
+# swallowed by a stale candidate cache.
+type_text("sub")
+if committed_after(lambda: key(IBus.KEY_Return)) != "sub":
+    raise SystemExit(f"Enter did not commit raw pinyin: {commits[-1]!r}")
+for passthrough_key in (
+    IBus.KEY_Up,
+    IBus.KEY_Down,
+    IBus.KEY_Page_Up,
+    IBus.KEY_Page_Down,
+):
+    key(passthrough_key, handled=False)
+
 # Middle editing: nihao -> niao -> nio -> niho, then Enter commits raw pinyin.
 type_text("nihao")
 key(IBus.KEY_Left)
@@ -233,6 +247,7 @@ context.focus_out()
 print(
     "xiapin-ibus-integration-ok idle-passthrough=1 idle-space=1 commit=你好 edit=1 apostrophe=1 number=1 "
     "paging=1 partial=1 escape=1 enter=1 shift=1 ctrl-space=1 modified-shift=1 "
+    "enter-passthrough=1 "
     "chinese-punctuation=，。 english-punctuation=,. "
     "horizontal=1 page-size=9 emoji=😀 emoji-prefix=你好😀"
 )

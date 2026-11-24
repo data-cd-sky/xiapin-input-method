@@ -202,6 +202,13 @@ int main(int argc, char **argv) {
     result = engine.enter();
     check(result.commit == "nihao" && engine.empty(),
           "Enter did not commit raw pinyin");
+    check(!engine.candidateUp().handled && !engine.candidateDown().handled &&
+              !engine.pageUp().handled && !engine.pageDown().handled,
+          "candidate navigation remained active after Enter committed raw pinyin");
+    type(engine, "nihao");
+    engine.reset();
+    check(!engine.candidateUp().handled && !engine.candidateDown().handled,
+          "candidate navigation remained active after reset");
     type(engine, "nihao");
     check(engine.escape().handled && engine.empty(),
           "Escape did not clear the composition");
@@ -227,7 +234,7 @@ int main(int argc, char **argv) {
           "mixed UTF-8 cursor conversion failed");
 
     std::cout << "xiapin-native-core-ok idle-space=1 hotword=1 edit=1 candidate=1 paging=1 "
-                 "partial=1 learning=1 shared=1 sensitive=1 enter=1 escape=1 "
+                 "partial=1 learning=1 shared=1 sensitive=1 enter=1 enter-passthrough=1 escape=1 "
                  "toggle=1 chinese-punctuation=1 emoji=1 emoji-prefix=1 emoji-learning=0\n";
     return 0;
 }
