@@ -7,6 +7,18 @@ LibIME 完成拼音切分、整句候选和本地学习，不使用 Fcitx 5 输�
 Ubuntu 22.04、24.04 和 26.04 amd64。包在 Ubuntu 22.04 构建，以该版本的 glibc、
 libstdc++ 和 LibIME ABI 为兼容下限。
 
+## 下载
+
+从 [GitHub Releases](https://github.com/data-cd-sky/xiapin-input-method/releases/latest)
+下载 `xiapin-input-method_2.0.3_amd64.deb`。同一页面提供 `SHA256SUMS`、源码归档和发布
+说明；下载后可按“版本和安装包校验”一节核对哈希。
+
+也可以直接下载当前版本：
+
+```bash
+curl -fLO https://github.com/data-cd-sky/xiapin-input-method/releases/download/v2.0.3/xiapin-input-method_2.0.3_amd64.deb
+```
+
 ## 功能与隐私原则
 
 - 支持整句输入、数字选词、候选翻页和候选鼠标点击；
