@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-readonly release_version="2.0.5"
+readonly release_version="2.0.6"
 
 if [[ ${1:-} == --version ]]; then
     printf '瞎拼输入法 %s\n' "$release_version"

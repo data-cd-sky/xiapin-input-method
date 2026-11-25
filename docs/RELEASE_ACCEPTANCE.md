@@ -121,6 +121,10 @@ dpkg -V xiapin-input-method
 - `xiapin-bootstrap.service` 和 GNOME IBus 服务 active，只有一个 IBus daemon；
 - `dpkg -V` 无输出；
 - 安装前后学习数据逐文件 SHA-256 完全一致。
+- 安装前把 `('xkb', 'cn')` 和 `('xkb', 'us+intl')` 加入 GNOME 输入源（`xkb:cn`
+  在 `ibus list-engine` 中确实不存在）。安装后 `('xkb', 'cn')` 必须从 `sources` 和
+  `mru-sources` 中消失，`('xkb', 'us+intl')` 必须保留，且 GNOME 仍自行激活瞎拼。
+  这一项同时证明清理没有误删有效键盘布局。
 
 ### 5. 真实 IBus 按键验收
 
@@ -159,6 +163,7 @@ horizontal=1 page-size=9 emoji=😀 emoji-prefix=你好😀
 发布前至少验证：
 
 - 当前版本覆盖重装不会继续运行已删除的旧 Engine；
+- 从本机已有失效来源的 `sources` 覆盖升级时，失效项被自动移除，其他键盘源顺序不变；
 - 旧包直接升级后元数据不是旧 symbol/icon，学习数据保留；
 - remove 后 sources 只失去瞎拼，其他输入源顺序不变；
 - remove 后重新安装与冷装一样自动完成；
@@ -197,6 +202,16 @@ horizontal=1 page-size=9 emoji=😀 emoji-prefix=你好😀
 - 邮箱只能是明确的 `example.org`/`example.invalid` 占位地址；
 - 文档中的版本、安装命令、支持矩阵、已知限制与实际测试一致；
 - 三台通过后再建立带版本号的虚拟机快照。
+
+### 10. 锁屏与失效来源回归
+
+熄屏解锁后唤不醒输入法是一个实际发生过的缺陷，不能只靠安装日志判断。每个候选包至少
+在一台 Wayland 机器上执行：
+
+1. 确认当前 `sources` 中原本含 `('xkb', 'cn')`，安装后已被自动移除；
+2. 锁屏并解锁，不点击右上角输入源菜单；
+3. 用短按 Shift 和 Ctrl+Space 分别确认能切回瞎拼并输入中文；
+4. `journalctl --user` 中不得再出现 `Cannot find engine xkb:cn::zho`。
 
 ## 已踩过的坑与规避规则
 

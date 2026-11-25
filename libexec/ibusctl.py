@@ -248,10 +248,80 @@ def wait_for_engine(ibus, expected, attempts):
     return False
 
 
+def available_engine_ids(ibus):
+    """Return the Engine IDs the live IBus daemon can actually resolve."""
+    result = run([ibus, "list-engine"], check=False)
+    if result.returncode != 0:
+        return None
+    engine_ids = set()
+    for line in result.stdout.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("language:"):
+            continue
+        engine_id = stripped.split(" - ", 1)[0].strip()
+        if engine_id:
+            engine_ids.add(engine_id)
+    return engine_ids
+
+def source_is_resolved(source, engine_ids):
+    """Return whether the live IBus daemon can activate this GNOME source."""
+    kind, name = source[0], source[1]
+    if kind != "xkb":
+        return name in engine_ids
+    # GNOME stores an XKB source as `layout` or `layout+variant` and expands
+    # it to an Engine ID such as `xkb:us:intl:eng`. Using the raw source name
+    # as a prefix would classify the very common `('xkb', 'us+intl')` as
+    # unavailable and silently delete the user's keyboard layout.
+    layout, _, variant = name.partition("+")
+    prefix = f"xkb:{layout}:{variant}:"
+    return any(candidate.startswith(prefix) for candidate in engine_ids)
+
+def unavailable_sources(ibus, sources):
+    """Split sources into ones the live IBus resolves and ones it rejects."""
+    engine_ids = available_engine_ids(ibus)
+    if engine_ids is None:
+        # A transient `ibus list-engine` failure must never delete sources.
+        return list(sources), [], False
+    if not any(engine_id.startswith("xkb:") for engine_id in engine_ids):
+        # Every desktop has XKB Engines. An empty set means the simple Engine
+        # component did not load, not that the user's keyboards are broken.
+        return list(sources), [], False
+    kept, dropped = [], []
+    for source in sources:
+        resolved = source == ENGINE or source_is_resolved(source, engine_ids)
+        (kept if resolved else dropped).append(source)
+    return kept, dropped, bool(dropped)
+
+def prune_unavailable_sources(ibus, sources, *, report=True):
+    """Remove input sources the running IBus cannot activate."""
+    kept, dropped, pruned = unavailable_sources(ibus, sources)
+    if report:
+        for source in dropped:
+            print(
+                f"Removed unavailable input source {source[0]}:{source[1]}",
+                file=sys.stderr,
+            )
+    return kept, dropped, pruned
+
+def sanitize_sources(config, ibus):
+    """Return both source lists with unusable engines removed."""
+    sources, dropped, pruned = prune_unavailable_sources(
+        ibus, merge_sources(get_sources(config, "sources"))
+    )
+    mru_sources, mru_dropped, mru_pruned = prune_unavailable_sources(
+        ibus, merge_sources(get_sources(config, "mru-sources")), report=False
+    )
+    for source in mru_dropped:
+        if source not in dropped:
+            print(
+                f"Removed unavailable MRU input source {source[0]}:{source[1]}",
+                file=sys.stderr,
+            )
+    return sources, mru_sources, dropped + mru_dropped, pruned or mru_pruned
+
 def configure_sources_and_select(config, ibus):
     """Ask GNOME Shell to rebuild its input-source state with Xiapin first."""
-    sources = merge_sources(get_sources(config, "sources"))
-    mru_sources = merge_sources(get_sources(config, "mru-sources"))
+    sources, mru_sources, _dropped, _pruned = sanitize_sources(config, ibus)
 
     # GNOME Shell owns the top-bar currentSource. Its deprecated `current`
     # GSettings key is ignored, and selecting only the IBus backend leaves the
@@ -259,16 +329,21 @@ def configure_sources_and_select(config, ibus):
     # watch external mru-sources changes. Temporarily leave only Xiapin in the
     # source list, so Shell itself must activate it, then restore every original
     # source with Xiapin first. No `ibus engine xiapin` shortcut is used here.
+    #
+    # `sources` must change only once per stage: Shell cancels an in-flight
+    # SetEngine when the list changes again before it settles, which is what
+    # happened when the pruned list was persisted first and the single-source
+    # list arrived a few milliseconds later. Persisting the MRU list does not
+    # touch Shell's selection, so the cleanup and the selection share one burst.
+    set_sources(config, "mru-sources", mru_sources)
     set_sources(config, "sources", [ENGINE])
     Gio.Settings.sync()
     if not wait_for_engine(ibus, ENGINE[1], 100):
         # Never strand the user with a temporary one-item list on failure.
-        set_sources(config, "mru-sources", mru_sources)
         set_sources(config, "sources", sources)
         Gio.Settings.sync()
         raise RuntimeError("GNOME Shell did not activate Xiapin from its input-source list")
 
-    set_sources(config, "mru-sources", mru_sources)
     set_sources(config, "sources", sources)
     Gio.Settings.sync()
     if not wait_for_engine(ibus, ENGINE[1], 50):
@@ -442,7 +517,13 @@ def setup():
             # single-source selection trick to bypass that boundary. The
             # signal-driven helper completes selection as soon as the normal
             # desktop returns and consumes no polling CPU while locked.
-            configure_sources(config)
+            sources, mru_sources, _dropped, pruned = sanitize_sources(config, ibus)
+            if pruned:
+                set_sources(config, "mru-sources", mru_sources)
+                set_sources(config, "sources", sources)
+                Gio.Settings.sync()
+            else:
+                configure_sources(config)
             defer_selection_until_unlock()
             return 0
         configure_sources_and_select(config, ibus)

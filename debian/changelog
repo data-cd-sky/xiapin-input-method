@@ -1,3 +1,15 @@
+xiapin-input-method (2.0.6) unstable; urgency=medium
+
+  * Remove GNOME input sources the live IBus daemon cannot resolve, so a
+    leftover source such as xkb:cn no longer strands the session on a plain
+    keyboard layout after unlock.
+  * Match XKB sources by GNOME's layout/variant form and skip pruning whenever
+    `ibus list-engine` fails or reports no XKB engines.
+  * Persist the cleanup and the initial selection in one `sources` write,
+    because a second write cancels GNOME Shell's in-flight SetEngine.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Wed, 25 Nov 2026 15:20:00 +0800
+
 xiapin-input-method (2.0.5) unstable; urgency=medium
 
   * Commit pending raw pinyin before switching modes, so a short Shift or

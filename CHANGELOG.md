@@ -1,5 +1,19 @@
 # 更新记录
 
+## 2.0.6 - 2026-11-25
+
+- 修复熄屏解锁后短按 Shift 或 Ctrl+Space 无法唤出瞎拼、必须在右上角手动点选输入源
+  的问题：根因是残留的失效输入源 `('xkb', 'cn')` 在解锁时无法恢复，GNOME Shell
+  退回键盘布局；
+- 安装和每次图形会话的幂等 setup 现在会查询 `ibus list-engine`，自动移除 IBus 无
+  法解析的输入源，并同步清理 `mru-sources`；
+- XKB 来源按 GNOME 的 `layout` / `layout+variant` 规则匹配，保留
+  `('xkb', 'us+intl')` 等键盘变体；`ibus list-engine` 失败或结果中没有 XKB Engine
+  时一律不删除任何来源；
+- 清理和首次选源合并为一次 `sources` 写入，避免 GNOME Shell 取消进行中的
+  `SetEngine` 而误报安装失败；
+- 不读写、不删除个人学习数据。
+
 ## 2.0.5 - 2026-11-25
 
 - 修复中文输入过程中短按 Shift 或 Ctrl+Space 切换英文时，尚未转换的拼音被直接

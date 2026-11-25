@@ -70,6 +70,13 @@ Emoji 候选来自 `/usr/share/ibus/dicts/emoji-zh.dict`。`emoji_index.cpp` 直
 
 - root 维护脚本不得遍历 home 或猜测桌面用户；
 - setup 合并 GNOME 输入源，只把 `('ibus', 'xiapin')` 放首位；
+- setup 必须先查询 `ibus list-engine`，移除当前 IBus 无法解析的输入源及其
+  `mru-sources` 条目。GNOME 的 XKB 来源按 `layout` / `layout+variant` 匹配
+  `xkb:<layout>:<variant>:`，不能按原始来源名做前缀匹配，否则会误删
+  `('xkb', 'us+intl')`；`ibus list-engine` 失败或结果中完全没有 `xkb:` Engine 时
+  一律不删除；
+- 失效源清理与首次选源必须合并为一次 `sources` 写入；连续写入会让 GNOME Shell 取消
+  进行中的 `SetEngine`，表现为清理成功但安装报“未激活”；
 - IBus 注册表刷新后必须等待 GNOME Shell 在新 IBus 总线上重新取得
   `org.freedesktop.IBus.Panel`，再触发输入源选择；
 - 不得用 `ibus engine xiapin` 证明 GNOME 顶栏已切换。GNOME 的 `current` GSettings key
@@ -77,6 +84,7 @@ Emoji 候选来自 `/usr/share/ibus/dicts/emoji-zh.dict`。`emoji_index.cpp` 直
 - 锁屏密码上下文不得强行启用第三方 Engine；锁屏安装只配置来源，由事件驱动的解锁
   helper 在普通桌面恢复后完成选择；
 - remove 只移除瞎拼输入源，不改变其他键盘和输入法；
+- remove 不得以清理失效源为由删除任何其他来源；
 - remove 和重装必须停止当前用户所有精确匹配的瞎拼 `--ibus`/`--register` Engine，
   不能让已删除或替换的二进制继续驻留；
 - 1.x 旧 autostart 通过 `dpkg-maintscript-helper rm_conffile` 无交互迁移；
@@ -94,7 +102,10 @@ Emoji 候选来自 `/usr/share/ibus/dicts/emoji-zh.dict`。`emoji_index.cpp` 直
 6. 新登录由 IBus component 的 `--ibus` 路径启动；
 7. 锁屏恢复必须通过自动化回归；GTK、Qt、Firefox、Chromium/Electron、挂起和多屏按
    当次实际完成情况记录，未完成项必须在发布说明和 README 中明确列为人工验收项；
-8. 清理后重新构建并冒烟三套系统，最终 SHA-256 写入发布目录的 `SHA256SUMS` 和
+8. 在含失效 XKB 来源（如 `('xkb', 'cn')`）的输入源列表下安装，必须自动移除该来源、
+   保留 `('xkb', 'us+intl')` 等有效键盘布局，并由 GNOME 激活瞎拼；解锁后 Shift 与
+   Ctrl+Space 必须可用；
+9. 清理后重新构建并冒烟三套系统，最终 SHA-256 写入发布目录的 `SHA256SUMS` 和
    `RELEASE_MANIFEST.yml`，不写进包内文档。
 
 doctor 的 OK 数量会因学习文件是否已经创建而变化。验收以 `0 failures`、warning 解释和

@@ -82,15 +82,24 @@ class SourceListTests(unittest.TestCase):
         config.set_value.side_effect = lambda key, variant: writes.append(
             (key, variant.value)
         )
+        listing = types.SimpleNamespace(
+            returncode=0,
+            stdout=(
+                "  xkb:us::eng - English (US)\n"
+                "  xkb:cn::zho - Chinese\n"
+                "  libpinyin - Intelligent Pinyin\n"
+            ),
+            stderr="",
+        )
         with mock.patch.object(
             ibusctl, "wait_for_engine", return_value=True
-        ) as wait, mock.patch.object(ibusctl, "run") as run:
+        ) as wait, mock.patch.object(ibusctl, "run", return_value=listing):
             ibusctl.configure_sources_and_select(config, "/usr/bin/ibus")
         self.assertEqual(
             writes,
             [
-                ("sources", [("ibus", "xiapin")]),
                 ("mru-sources", [("ibus", "xiapin"), ("ibus", "libpinyin"), ("xkb", "cn")]),
+                ("sources", [("ibus", "xiapin")]),
                 ("sources", [("ibus", "xiapin"), ("xkb", "cn"), ("ibus", "libpinyin")]),
             ],
         )
@@ -101,7 +110,115 @@ class SourceListTests(unittest.TestCase):
                 mock.call("/usr/bin/ibus", "xiapin", 50),
             ],
         )
-        run.assert_not_called()
+
+    def test_unavailable_sources_drops_engines_ibus_cannot_resolve(self):
+        listing = types.SimpleNamespace(
+            returncode=0,
+            stdout=(
+                "language: English\n"
+                "  xkb:us::eng - English (US)\n"
+                "language: Chinese\n"
+                "  libpinyin - Intelligent Pinyin\n"
+                "  xiapin - 瞎拼输入法\n"
+            ),
+            stderr="",
+        )
+        with mock.patch.object(ibusctl, "run", return_value=listing):
+            kept, dropped, pruned = ibusctl.unavailable_sources(
+                "/usr/bin/ibus",
+                [
+                    ("ibus", "xiapin"),
+                    ("xkb", "us"),
+                    ("xkb", "cn"),
+                    ("ibus", "libpinyin"),
+                ],
+            )
+        self.assertTrue(pruned)
+        self.assertEqual(
+            kept, [("ibus", "xiapin"), ("xkb", "us"), ("ibus", "libpinyin")]
+        )
+        self.assertEqual(dropped, [("xkb", "cn")])
+
+    def test_unavailable_sources_keeps_everything_when_listing_fails(self):
+        failure = types.SimpleNamespace(returncode=1, stdout="", stderr="bus down")
+        sources = [("ibus", "xiapin"), ("xkb", "cn")]
+        with mock.patch.object(ibusctl, "run", return_value=failure):
+            kept, dropped, pruned = ibusctl.unavailable_sources(
+                "/usr/bin/ibus", sources
+            )
+        self.assertEqual(kept, sources)
+        self.assertEqual(dropped, [])
+        self.assertFalse(pruned)
+
+    def test_unavailable_sources_keeps_keyboard_variants(self):
+        listing = types.SimpleNamespace(
+            returncode=0,
+            stdout=(
+                "  xkb:us::eng - English (US)\n"
+                "  xkb:us:intl:eng - English (US, intl.)\n"
+                "  libpinyin - Intelligent Pinyin\n"
+            ),
+            stderr="",
+        )
+        sources = [
+            ("ibus", "xiapin"),
+            ("xkb", "us"),
+            ("xkb", "us+intl"),
+            ("ibus", "libpinyin"),
+        ]
+        with mock.patch.object(ibusctl, "run", return_value=listing):
+            kept, dropped, pruned = ibusctl.unavailable_sources(
+                "/usr/bin/ibus", sources
+            )
+        self.assertEqual(kept, sources)
+        self.assertEqual(dropped, [])
+        self.assertFalse(pruned)
+
+    def test_unavailable_sources_keeps_everything_without_xkb_engines(self):
+        listing = types.SimpleNamespace(
+            returncode=0,
+            stdout="  libpinyin - Intelligent Pinyin\n  xiapin - 瞎拼输入法\n",
+            stderr="",
+        )
+        sources = [("ibus", "xiapin"), ("xkb", "us")]
+        with mock.patch.object(ibusctl, "run", return_value=listing):
+            kept, dropped, pruned = ibusctl.unavailable_sources(
+                "/usr/bin/ibus", sources
+            )
+        self.assertEqual(kept, sources)
+        self.assertEqual(dropped, [])
+        self.assertFalse(pruned)
+
+    def test_selection_prunes_broken_source_before_activating(self):
+        values = {
+            "sources": [("xkb", "cn"), ("ibus", "libpinyin")],
+            "mru-sources": [("ibus", "libpinyin"), ("xkb", "cn")],
+        }
+        config = mock.Mock()
+        config.get_value.side_effect = lambda key: types.SimpleNamespace(
+            unpack=lambda: values[key]
+        )
+        writes = []
+        config.set_value.side_effect = lambda key, variant: writes.append(
+            (key, variant.value)
+        )
+        listing = types.SimpleNamespace(
+            returncode=0,
+            stdout="  xkb:us::eng - English (US)\n  libpinyin - Intelligent Pinyin\n",
+            stderr="",
+        )
+        with mock.patch.object(ibusctl, "run", return_value=listing), \
+                mock.patch.object(ibusctl, "wait_for_engine", return_value=True):
+            ibusctl.configure_sources_and_select(config, "/usr/bin/ibus")
+        self.assertEqual(
+            writes[0], ("mru-sources", [("ibus", "xiapin"), ("ibus", "libpinyin")])
+        )
+        self.assertEqual(writes[1], ("sources", [("ibus", "xiapin")]))
+        self.assertEqual(
+            writes[2], ("sources", [("ibus", "xiapin"), ("ibus", "libpinyin")])
+        )
+        for _key, value in writes:
+            self.assertNotIn(("xkb", "cn"), value)
 
     def test_gnome_selection_does_not_force_the_ibus_backend(self):
         values = {
@@ -112,15 +229,20 @@ class SourceListTests(unittest.TestCase):
         config.get_value.side_effect = lambda key: types.SimpleNamespace(
             unpack=lambda: values[key]
         )
+        listing = types.SimpleNamespace(
+            returncode=0,
+            stdout="  xkb:cn::zho - Chinese\n  libpinyin - Intelligent Pinyin\n",
+            stderr="",
+        )
         with mock.patch.object(
             ibusctl, "wait_for_engine", side_effect=[True, True]
-        ), mock.patch.object(ibusctl, "run") as run:
+        ), mock.patch.object(ibusctl, "run", return_value=listing) as run:
             ibusctl.configure_sources_and_select(config, "/usr/bin/ibus")
+        # Listing engines is allowed; forcing the Engine behind GNOME is not.
         self.assertNotIn(
             mock.call(["/usr/bin/ibus", "engine", "xiapin"], check=False),
             run.call_args_list,
         )
-        run.assert_not_called()
 
     def test_gnome_selection_failure_is_reported(self):
         values = {"sources": [], "mru-sources": []}
@@ -135,7 +257,7 @@ class SourceListTests(unittest.TestCase):
                 ibusctl.configure_sources_and_select(config, "/usr/bin/ibus")
         self.assertEqual(
             [call.args[0] for call in config.set_value.call_args_list],
-            ["sources", "mru-sources", "sources"],
+            ["mru-sources", "sources", "sources"],
         )
 
     def test_locked_screen_adds_xiapin_without_forcing_selection(self):
