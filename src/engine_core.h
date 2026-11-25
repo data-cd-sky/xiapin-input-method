@@ -61,8 +61,8 @@ public:
     EngineResult commitBestAndAppend(const std::string &suffix);
 
     void reset();
-    void toggleMode();
-    void setChineseMode(bool enabled);
+    EngineResult toggleMode();
+    EngineResult setChineseMode(bool enabled);
     void setSensitive(bool sensitive);
     bool sensitive() const;
     bool empty() const;

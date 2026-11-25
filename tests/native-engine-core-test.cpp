@@ -224,9 +224,22 @@ int main(int argc, char **argv) {
     check(!engine.type('a').handled, "English mode swallowed an ASCII key");
     engine.setChineseMode(true);
     check(engine.view().chineseMode, "explicit Chinese mode failed");
-    engine.toggleMode();
+    check(engine.toggleMode().commit.empty(),
+          "idle mode toggle emitted a commit");
     check(!engine.view().chineseMode, "Shift/Ctrl+Space mode toggle failed");
     engine.toggleMode();
+    check(engine.view().chineseMode, "second mode toggle failed");
+
+    type(engine, "sub");
+    auto toggle = engine.toggleMode();
+    check(toggle.commit == "sub",
+          "mode toggle dropped the pending input: <" + toggle.commit + ">");
+    check(engine.empty(), "mode toggle left the composition active");
+    check(!engine.view().chineseMode, "mode toggle did not switch to English");
+    check(!engine.candidateUp().handled && !engine.candidateDown().handled,
+          "candidate navigation stayed active after a mode toggle");
+    engine.setChineseMode(true);
+    check(engine.view().chineseMode, "mode toggle did not restore Chinese");
 
     check(xiapin::utf8CharacterOffset("你hao", 3) == 1,
           "UTF-8 cursor conversion failed");
@@ -235,6 +248,7 @@ int main(int argc, char **argv) {
 
     std::cout << "xiapin-native-core-ok idle-space=1 hotword=1 edit=1 candidate=1 paging=1 "
                  "partial=1 learning=1 shared=1 sensitive=1 enter=1 enter-passthrough=1 escape=1 "
-                 "toggle=1 chinese-punctuation=1 emoji=1 emoji-prefix=1 emoji-learning=0\n";
+                 "toggle=1 toggle-passthrough=1 chinese-punctuation=1 emoji=1 emoji-prefix=1 "
+                 "emoji-learning=0\n";
     return 0;
 }

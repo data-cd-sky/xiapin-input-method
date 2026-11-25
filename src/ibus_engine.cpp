@@ -154,8 +154,7 @@ gboolean processKeyEvent(IBusEngine *base, guint keyval, guint,
         }
         if (engine->shiftPending) {
             engine->shiftPending = false;
-            engine->core->toggleMode();
-            render(engine);
+            applyResult(engine, engine->core->toggleMode());
             return FALSE;
         }
         return FALSE;
@@ -176,8 +175,7 @@ gboolean processKeyEvent(IBusEngine *base, guint keyval, guint,
     const guint modifiers =
         state & (IBUS_CONTROL_MASK | IBUS_MOD1_MASK | IBUS_SUPER_MASK);
     if (keyval == IBUS_KEY_space && modifiers == IBUS_CONTROL_MASK) {
-        engine->core->toggleMode();
-        render(engine);
+        applyResult(engine, engine->core->toggleMode());
         return TRUE;
     }
     if (modifiers != 0) {

@@ -1,3 +1,11 @@
+xiapin-input-method (2.0.5) unstable; urgency=medium
+
+  * Commit pending raw pinyin before switching modes, so a short Shift or
+    Ctrl+Space press no longer discards text that has not been converted.
+  * Add toggle-passthrough coverage to native and real IBus integration tests.
+
+ -- Xiapin Input Method Maintainers <xiapin-input@example.org>  Wed, 25 Nov 2026 02:10:00 +0800
+
 xiapin-input-method (2.0.4) unstable; urgency=medium
 
   * Pass Up/Down/PageUp/PageDown back to the application after Enter commits

@@ -41,7 +41,7 @@ profile 精确移除瞎拼，并在文件仍等于项目应用版本时恢复旧
 
 ## 已验证属性
 
-本节历史结论必须以当前版本的 `docs/RELEASE_EVIDENCE_2.0.4.md` 为准。2.0.2 曾只检查
+本节历史结论必须以当前版本的 `docs/RELEASE_EVIDENCE_2.0.5.md` 为准。2.0.2 曾只检查
 IBus 全局 Engine，没有独立证明 GNOME Shell 顶栏来源同步；该验收缺口由 2.0.3 修正。
 
 - 22.04 LibIME 1.0 和 26.04 LibIME 1.1 的核心行为一致；

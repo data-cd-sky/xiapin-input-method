@@ -551,15 +551,18 @@ void EngineCore::reset() {
     impl_->clearComposition();
 }
 
-void EngineCore::toggleMode() {
-    reset();
+EngineResult EngineCore::toggleMode() {
+    auto result = enter();
     ChineseMode.store(!ChineseMode.load());
+    result.changed = true;
+    return result;
 }
 
-void EngineCore::setChineseMode(bool enabled) {
+EngineResult EngineCore::setChineseMode(bool enabled) {
     if (ChineseMode.load() != enabled) {
-        toggleMode();
+        return toggleMode();
     }
+    return {false, false, {}};
 }
 
 void EngineCore::setSensitive(bool sensitive) { impl_->sensitive_ = sensitive; }

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(xiapin-input-method VERSION 2.0.4 LANGUAGES CXX)
+project(xiapin-input-method VERSION 2.0.5 LANGUAGES CXX)
 
 if(POLICY CMP0167)
     cmake_policy(SET CMP0167 NEW)

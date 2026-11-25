@@ -210,16 +210,28 @@ if len(commits) != before:
 if committed_after(lambda: key(IBus.KEY_9)) != "你好😀":
     raise SystemExit(f"Emoji selection lost its Chinese prefix: {commits[-1]!r}")
 
-# Both supported toggles must pass ordinary letters through while in English.
+# Both supported toggles must pass ordinary letters through while in English,
+# and must commit pending pinyin instead of silently discarding it.
 key(IBus.KEY_space, IBus.ModifierType.CONTROL_MASK)
 key(IBus.KEY_a, handled=False)
 key(IBus.KEY_space, IBus.ModifierType.CONTROL_MASK)
+type_text("sub")
+if committed_after(
+    lambda: key(IBus.KEY_space, IBus.ModifierType.CONTROL_MASK)
+) != "sub":
+    raise SystemExit(f"Ctrl+Space dropped the pending input: {commits[-1]!r}")
+key(IBus.KEY_a, handled=False)
+key(IBus.KEY_space, IBus.ModifierType.CONTROL_MASK)
+type_text("sub")
 key(IBus.KEY_Shift_L, handled=False)
-key(
-    IBus.KEY_Shift_L,
-    IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.RELEASE_MASK,
-    handled=False,
-)
+if committed_after(
+    lambda: key(
+        IBus.KEY_Shift_L,
+        IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.RELEASE_MASK,
+        handled=False,
+    )
+) != "sub":
+    raise SystemExit(f"Shift dropped the pending input: {commits[-1]!r}")
 key(IBus.KEY_a, handled=False)
 key(IBus.KEY_comma, handled=False)
 key(IBus.KEY_period, handled=False)
@@ -247,7 +259,7 @@ context.focus_out()
 print(
     "xiapin-ibus-integration-ok idle-passthrough=1 idle-space=1 commit=你好 edit=1 apostrophe=1 number=1 "
     "paging=1 partial=1 escape=1 enter=1 shift=1 ctrl-space=1 modified-shift=1 "
-    "enter-passthrough=1 "
+    "enter-passthrough=1 toggle-passthrough=1 "
     "chinese-punctuation=，。 english-punctuation=,. "
     "horizontal=1 page-size=9 emoji=😀 emoji-prefix=你好😀"
 )
